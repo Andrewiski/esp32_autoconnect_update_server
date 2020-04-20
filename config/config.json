@@ -1,0 +1,17 @@
+{
+  "logLevel": "info",
+  "maxLogLength": 1000,
+  "useHttp": true,
+  "useHttps": true,
+  "httpsServerKey": "config/server.key",
+  "httpsServerCert": "config/server.cert",
+  "httpsServerCa": "config/ca.cert",
+  "useHttpsClientCertAuth": false,
+  "httpport": 1380,
+  "httpsport": 1381,
+  "adminUsername": "admin",
+  "adminPasswordHash": "b8e422413690d73d18827474776b3a49",
+  "autoconnectCatalogPath": "/_catalog",
+  "adminDashboardPath": "/adminDashboard"
+
+}

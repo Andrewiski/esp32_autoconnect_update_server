@@ -1,0 +1,235 @@
+﻿<!DOCTYPE html>
+
+<html>
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link href="/favicon.ico" rel="shortcut icon" type="image/x-icon" />
+    <title>ESP32 AutoConnect Update Dashboard - by Digital Example LLC</title>
+    <base href="/">
+    <link href="/stylesheets/style.css" rel="stylesheet" />
+    <!--<link href="stylesheets/bootstrap.min.css" rel="stylesheet" />
+    <link href="stylesheets/bootstrap-theme.min.css" rel="stylesheet" />-->
+    <link href="/javascript/bootstrap/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="/javascript/bootstrap/css/bootstrap-theme.min.css" rel="stylesheet" />
+    <link href="/javascript/fontawesome/css/font-awesome.min.css" rel="stylesheet" />
+    <link href="/javascript/animate-css/animate.min.css" rel="stylesheet" />
+    <!--Served up by the socket.io service directly as part of the IO service process-->
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="/javascript/jquery/jquery.min.js"></script>
+    <script src="/javascript/bootstrap/js/bootstrap.min.js"></script>
+    <script src="/javascript/bootstrap-notify/bootstrap-notify.min.js"></script>
+    <script src="/javascript/moment/moment.min.js"></script>
+    <script type="text/javascript">
+
+        $(function () {
+
+
+
+
+            var Service = {
+                socket: io.connect(),
+                commonData: {}
+            };
+            // Create our socket.io object and connect it to express
+            Service.socket.on('connection', function (message) {
+                console.log('socket.io connection', message);
+                $(".browserConnected").removeClass("text-danger").addClass("text-success");
+            });
+            Service.socket.on('connect_error', function (message) {
+                console.log('socket.io connect_error', message);
+                $(".browserConnected").removeClass("text-success").addClass("text-danger");
+            });
+
+            Service.socket.on('connect_timeout', function (message) {
+                console.log('socket.io connect_timeout');
+                $(".browserConnected").removeClass("text-success").addClass("text-danger");
+            });
+
+            Service.socket.on('reconnecting', function (message) {
+                console.log('socket.io reconnecting', message);
+                $(".browserConnected").removeClass("text-success").addClass("text-danger");
+            });
+            Service.socket.on('reconnect', function (message) {
+                console.log('socket.io reconnect', message);
+                $(".browserConnected").removeClass("text-danger").addClass("text-success");
+            });
+
+            Service.socket.on('ping', function (message) {
+                console.log('socket.io ping sent to server', message);
+            });
+            Service.socket.on('pong', function (message) {
+                console.log('socket.io pong received from server', message);
+                $(".browserConnected").removeClass("text-danger").addClass("text-success");
+            });
+            Service.socket.on('commonData', function (message) {
+                Service.commonData = message;
+                console.log('commonData', message);
+                
+            });
+
+
+            
+            $('.btnOpenUploadClientCertificatesModal').on('click', openUploadCertificatesDialog);
+            $('.btnUploadCertificates').on('click', uploadCertificatesFromDialog);
+            $('.btnRestoreClientCertsAsServerCerts').on('click', function () {
+               Service.socket.emit('RestoreClientCertsAsServerCerts');
+            });
+        })
+
+    </script>
+
+
+
+    <style>
+
+
+        .select2 > .select2-choice.ui-select-match {
+            /* Because of the inclusion of Bootstrap */
+            height: 29px;
+        }
+
+        .selectize-control > .selectize-dropdown {
+            top: 36px;
+        }
+        /* Some additional styling to demonstrate that append-to-body helps achieve the proper z-index layering. */
+        .select-box {
+            background: #fff;
+            position: relative;
+            z-index: 1;
+        }
+
+        .alert-info.positioned {
+            margin-top: 1em;
+            position: relative;
+            z-index: 10000; /* The select2 dropdown has a z-index of 9999 */
+        }
+
+        .spanLabel {
+            font-weight: bold;
+        }
+
+        
+    </style>
+
+</head>
+
+<body>
+    <div class="container-fluid">
+        <div id="errormsg"></div>
+        <div name="monitor" id="monitor" class="sb form">
+            <div class="header">
+                <span class="h2">ESP32 Autoconnect Update Dashboard   </span><span class="h2"><i class="fa fa-rss browserConnected text-success" title="Browser To Server"></i> </span>
+            </div>
+            <div>
+                <ul class="nav nav-tabs" role="tablist">
+                    <li role="presentation" class="active"><a href="#home" aria-controls="home" role="tab" data-toggle="tab">Home</a></li>
+                    <li role="presentation"><a href="#logs" aria-controls="logs" role="tab" data-toggle="tab">Logs</a></li>
+                </ul>
+
+                <div class="tab-content">
+                    <div role="tabpanel" class="tab-pane active" id="home">
+                        <div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Update Info</div>
+                                <div class="panel-body">
+                                    <div class="container-fluid ">
+                                        <div class="main">
+                                            <div><span class="spanLabel">Start Up Date:</span><span class="audioStreamerStartupDate"></span> </div>
+                                            
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div role="tabpanel" class="tab-pane" id="logs">
+                        <div>
+                            <div class="panel panel-default">
+                                <div class="panel-heading">Logs - <i class="fa fa-refresh btnRefreshStreamerLogs"></i></div>
+                                <div class="panel-body">
+                                    <div class="container-fluid ">
+
+                                        <table class="table table-condensed">
+                                            <thead>
+                                                <tr><th>Timestamp</th><th>Message</th></tr>
+                                            </thead>
+                                            <tbody class="streamerLogs">
+                                            </tbody>
+                                        </table>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="htmlTemplates" style="display:none">
+        <div class="updateTemplate">
+            <table>
+                <tr class="stream" data-connectionId="">
+                    <td class="streamTimestamp"></td>
+                    <td class="connectionId"></td>
+                    <td class="clientId"></td>
+                    <td class="connectionIp"></td>
+                    <td class="connectionPort"></td>
+                    <td class="connectionUserAgent"></td>
+                </tr>
+            </table>
+        </div>
+        <div class="streamerLogsTemplate">
+            <table>
+                <tr class="logRow"><td class="logTs"></td><td class="logMsg"></td></tr>
+            </table>
+        </div>
+        
+
+
+    </div>
+    <div class="modals">
+        <div class="uploadUpdateTemplate">
+            <div>
+
+
+                <!-- Modal -->
+                <div class="modal fade" id="uploadCertificatesModal" tabindex="-1" role="dialog" aria-labelledby="UploadCertificatesModal">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                                <h4 class="modal-title" id="myModalLabel">Upload Certificates</h4>
+                            </div>
+                            <div class="modal-body">
+                                <div>
+                                    <table>
+                                        <tr>
+                                            <td>Private Key Pem</td>
+                                            <td><input id="PrivateKeyFile" type="file" /></td>
+                                        </tr>
+                                        <tr>
+                                            <td>Public Certs With Chain Pem</td>
+                                            <td><input id="PublicCertFile" type="file" /></td>
+                                        </tr>
+                                    </table>
+                                    <div class="alert alert-sm alert-danger uploadCertificatesError" style="display:none"> An Error has occured</div>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+                                <button type="button" class="btn btn-primary btnUploadCertificates">Upload</button>
+
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

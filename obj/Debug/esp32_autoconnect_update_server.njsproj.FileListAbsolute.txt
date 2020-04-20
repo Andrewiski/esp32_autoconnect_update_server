@@ -1,0 +1,2 @@
+C:\Users\adevries\source\repos\andrewiski\esp32_autoconnect_update_server\obj\Debug\esp32_autoconnect_update_server.njsprojAssemblyReference.cache
+C:\Users\adevries\source\repos\andrewiski\esp32_autoconnect_update_server\bin\Microsoft.NodejsTools.WebRole.dll
