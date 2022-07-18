@@ -22,7 +22,7 @@
     "extend": "^3.0.2",
     "font-awesome": "^4.6.3",
     "jquery": "^3.4.1",
-    "jquery-ui": "^1.12.1",
+    "jquery-ui": "^1.13.2",
     "moment": "^2.24.0",
     "node-promise": "^0.5.14",
     "path": "^0.12.7",
